@@ -1,0 +1,25 @@
+digraph BuildFeature {
+    graph [goal="Plan, implement, review, and verify one CRM change"]
+    rankdir=LR
+
+    start [shape=Mdiamond, label="Start"]
+    exit  [shape=Msquare, label="Exit"]
+
+    plan [label="Plan", prompt="Read the repository and plan the smallest complete implementation for: {{ goal }}. Do not edit files."]
+    approve [shape=hexagon, label="Approve plan"]
+    setup [label="Install dependencies", shape=parallelogram, script="npm install", max_retries=0]
+    implement [label="Implement", prompt="Implement the approved plan for: {{ goal }}. Reuse existing code and keep the diff small."]
+    review [label="Review", prompt="Review the implementation of {{ goal }} for correctness, security, and needless complexity. Fix only concrete issues."]
+    verify [label="Verify", shape=parallelogram, script="./scripts/check", goal_gate=true, retry_target="fix", max_retries=0]
+    fix [label="Fix", prompt="Read the verification output and fix the root cause for {{ goal }}. Do not weaken checks.", max_visits=3]
+
+    start -> plan -> approve
+    approve -> setup [label="[A] Approve"]
+    approve -> plan [label="[R] Revise"]
+    setup -> implement [condition="outcome=succeeded"]
+    setup -> exit
+    implement -> review -> verify
+    verify -> exit [condition="outcome=succeeded"]
+    verify -> fix
+    fix -> verify
+}

@@ -1,0 +1,8 @@
+_version = 1
+
+[run.pull_request]
+enabled = false
+
+[run.model]
+provider = "openai"
+name = "gpt-5.4"

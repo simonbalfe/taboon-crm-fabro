@@ -6,7 +6,7 @@ The CRM is deliberately small. It gives Fabro a realistic full-stack application
 
 ## What the demo shows
 
-The checked-in [`build-feature.fabro`](workflows/build-feature.fabro) workflow runs one feature request through:
+The checked-in [`build-feature` workflow](.fabro/workflows/build-feature/workflow.fabro) runs one feature request through:
 
 ```text
 Plan → Human approval → Implement → Review → Build and type-check
@@ -35,11 +35,15 @@ npm install
 
 Open the PocketBase dashboard at `http://127.0.0.1:8090/_/`, create the first superuser, and add a record to the `users` collection. The CRM runs at `http://localhost:5173`.
 
-Install Fabro separately, then run the workflow from the repository root:
+Install Fabro, connect it to your existing Codex subscription, then run the workflow from the repository root:
 
 ```sh
-fabro run workflows/build-feature.fabro --goal "Add notes to contacts"
+brew install fabro-sh/tap/fabro
+fabro install
+fabro run build-feature --goal "Add notes to contacts"
 ```
+
+During `fabro install`, choose OpenAI Codex device login. Fabro uses the subscription OAuth session stored in its local vault; no OpenAI API key is required. This repository pins Fabro to the OpenAI provider and disables automatic pull requests for the demo.
 
 Good demonstration tasks are small but cross more than one layer:
 
