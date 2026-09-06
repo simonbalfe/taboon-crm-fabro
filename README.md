@@ -38,7 +38,7 @@ Open the PocketBase dashboard at `http://127.0.0.1:8090/_/`, create the first su
 Install Fabro separately, then run the workflow from the repository root:
 
 ```sh
-fabro run workflows/build-feature.fabro
+fabro run workflows/build-feature.fabro --goal "Add notes to contacts"
 ```
 
 Good demonstration tasks are small but cross more than one layer:
