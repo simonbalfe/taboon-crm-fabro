@@ -1,8 +1,56 @@
-# Taboon CRM Fabro test
+# Fabro CRM demo
 
-A deliberately small CRM for testing Fabro against a real full-stack repository.
+This repository demonstrates how [Fabro](https://fabro.sh) turns an AI coding task into a visible, repeatable workflow.
 
-## Stack
+The CRM is deliberately small. It gives Fabro a realistic full-stack application to change, review, and verify without making the demo about CRM complexity.
+
+## What the demo shows
+
+The checked-in [`build-feature.fabro`](workflows/build-feature.fabro) workflow runs one feature request through:
+
+```text
+Plan → Human approval → Implement → Review → Build and type-check
+                                      ↑             ↓
+                                      └── Fix ← Failure
+```
+
+- The workflow is version-controlled with the code.
+- A human approves the plan before files change.
+- A separate review stage checks the implementation.
+- Deterministic TypeScript and production-build checks decide whether the work passes.
+- Failed checks return to an agent for up to three fixes.
+- Git keeps the resulting change inspectable and reversible.
+
+The agents remain non-deterministic, but the process around them is explicit and repeatable.
+
+## Run the demonstration
+
+Install and start the example application:
+
+```sh
+npm install
+./scripts/install-pocketbase
+./scripts/dev
+```
+
+Open the PocketBase dashboard at `http://127.0.0.1:8090/_/`, create the first superuser, and add a record to the `users` collection. The CRM runs at `http://localhost:5173`.
+
+Install Fabro separately, then run the workflow from the repository root:
+
+```sh
+fabro run workflows/build-feature.fabro
+```
+
+Good demonstration tasks are small but cross more than one layer:
+
+- Add notes to contacts.
+- Add a next-action date to deals.
+- Add a qualified-deals filter.
+- Show won revenue on the overview.
+
+Watch where Fabro pauses, which files the agent changes, how `./scripts/check` gates completion, and how a failed check enters the fix loop.
+
+## Example application
 
 | Layer | Technology |
 |---|---|
@@ -14,41 +62,10 @@ A deliberately small CRM for testing Fabro against a real full-stack repository.
 | Infrastructure | Ubuntu 24.04 on one Hetzner server with systemd |
 | Backups | PocketBase native backups with a nightly macOS launchd pull to Google Drive |
 
-## Local setup
+The OpenRouter assistant is optional. Copy `.env.example` to `.env` and provide `OPENROUTER_API_KEY` only when demonstrating it.
 
-```sh
-npm install
-./scripts/install-pocketbase
-cp .env.example .env
-set -a
-. ./.env
-set +a
-./scripts/dev
-```
+## Deployment example
 
-Open `http://127.0.0.1:8090/_/`, create the first PocketBase superuser, then create a user record in the `users` collection. Sign into the CRM at `http://localhost:5173`.
+The `deploy/` directory shows how the same demo could run on a small Hetzner server behind Caddy. It is included to give Fabro realistic infrastructure files to reason about; running the Fabro demonstration does not require deployment.
 
-The OpenRouter assistant is optional. Leave `OPENROUTER_API_KEY` empty until you want to test it.
-
-## Fabro
-
-Fabro is not installed by this repository. Once installed, run:
-
-```sh
-fabro run workflows/build-feature.fabro
-```
-
-The workflow plans a requested change, waits for approval, implements it, reviews the diff, and loops through `./scripts/check` until verification passes or the three-fix limit is reached.
-
-## Hetzner deployment
-
-Create one Ubuntu 24.04 server, point `crm.taboon.co.uk` to its IP, and install Caddy. Copy these runtime files to `/opt/taboon-crm`:
-
-- `pocketbase`
-- `pb_hooks/`
-- `pb_migrations/`
-- the built frontend as `web/dist/`
-
-Create the `taboon-crm` system user and `/etc/taboon-crm.env`, then install `deploy/hetzner/taboon-crm.service` and `deploy/hetzner/Caddyfile` in their normal system locations. Enable native PocketBase backups in the admin UI.
-
-Fill in the two placeholders in `deploy/macos/co.uk.taboon.crm-backups.plist`, copy it to `~/Library/LaunchAgents/`, and load it with `launchctl bootstrap gui/$(id -u)`. The job pulls PocketBase backup archives into Google Drive every night.
+This repository is a teaching example, not a production CRM template. Authentication rules and secret boundaries are retained because removing them would teach the wrong workflow.
