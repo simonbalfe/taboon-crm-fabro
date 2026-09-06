@@ -1,0 +1,8 @@
+#!/bin/sh
+set -eu
+
+: "${TABOON_BACKUP_SOURCE:?Set TABOON_BACKUP_SOURCE to user@host:/opt/taboon-crm/pb_data/backups/}"
+: "${TABOON_BACKUP_DESTINATION:?Set TABOON_BACKUP_DESTINATION to the Google Drive backup directory}"
+
+mkdir -p "$TABOON_BACKUP_DESTINATION"
+rsync -az "$TABOON_BACKUP_SOURCE" "$TABOON_BACKUP_DESTINATION/"

@@ -1,0 +1,11 @@
+#!/bin/sh
+set -eu
+
+if [ ! -x bin/pocketbase ]; then
+  ./scripts/install-pocketbase
+fi
+
+bin/pocketbase serve --http=127.0.0.1:8090 --dir=pb_data --hooksDir=pb_hooks --migrationsDir=pb_migrations &
+pocketbase_pid=$!
+trap 'kill "$pocketbase_pid" 2>/dev/null || true' EXIT INT TERM
+npm run dev

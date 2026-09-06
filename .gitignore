@@ -1,0 +1,8 @@
+node_modules/
+dist/
+bin/
+pb_data/
+.env
+*.log
+*.tsbuildinfo
+.DS_Store

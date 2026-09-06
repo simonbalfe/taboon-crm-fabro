@@ -1,0 +1,17 @@
+crm.taboon.co.uk {
+    encode zstd gzip
+
+    handle /api/* {
+        reverse_proxy 127.0.0.1:8090
+    }
+
+    handle /_/* {
+        reverse_proxy 127.0.0.1:8090
+    }
+
+    handle {
+        root * /opt/taboon-crm/web/dist
+        try_files {path} /index.html
+        file_server
+    }
+}

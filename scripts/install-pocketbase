@@ -1,0 +1,25 @@
+#!/bin/sh
+set -eu
+
+version="0.39.4"
+system_name=$(uname -s | tr '[:upper:]' '[:lower:]')
+machine_name=$(uname -m)
+
+case "$machine_name" in
+  arm64|aarch64) architecture="arm64" ;;
+  x86_64|amd64) architecture="amd64" ;;
+  *) echo "Unsupported architecture: $machine_name" >&2; exit 1 ;;
+esac
+
+case "$system_name" in
+  darwin|linux) ;;
+  *) echo "Unsupported system: $system_name" >&2; exit 1 ;;
+esac
+
+download_dir=$(mktemp -d)
+trap 'rm -rf "$download_dir"' EXIT
+mkdir -p bin
+curl -fL "https://github.com/pocketbase/pocketbase/releases/download/v${version}/pocketbase_${version}_${system_name}_${architecture}.zip" -o "$download_dir/pocketbase.zip"
+unzip -q "$download_dir/pocketbase.zip" pocketbase -d bin
+chmod +x bin/pocketbase
+bin/pocketbase --version
